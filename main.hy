@@ -12,45 +12,71 @@
 (setv
   url
   "https://govt.westlaw.com/calregs/Browse/Home/California/CaliforniaCodeofRegulations?transitionType=Default&contextData=%28sc.Default%29"
+  base
+  "https://govt.westlaw.com"
 )
 
-(defn init-log []
-  "Init logging infrastructure"
-  (logging.basicConfig
-    :format
-    "[%(asctime)s] [%(levelname)-8s] %(message)s"
-    :level
-    logging.DEBUG
-    :datefmt
-    "%Y-%m-%d %H:%M:%S"
+(defclass Init []
+  "Class for init funcs"
+  (with-decorator staticmethod
+    (defn init-hi []
+      "hi :)"
+      (logging.info "hi :)")
+    )
+  )
+
+  (with-decorator staticmethod
+    (defn init-bye []
+      "bye :("
+      (logging.info "bye :(")
+    )
+  )
+
+  (with-decorator staticmethod
+    (defn init-log []
+      "Init logging infrastructure"
+      (logging.basicConfig
+        :format
+        "[%(asctime)s] [%(levelname)-8s] %(message)s"
+        :level
+        logging.DEBUG
+        :datefmt
+        "%Y-%m-%d %H:%M:%S"
+      )
+    )
+  )
+
+  (with-decorator staticmethod
+    (defn init []
+      "Initialize init funds"
+      (init-log)
+      (init-hi)
+      (init-bye)
+    )
   )
 )
 
-(defn init-hi []
-  "hi :)"
-  (logging.info "hi :)")
-)
 
-(defn init-bye []
-  "bye :("
-  (logging.info "bye :(")
-)
-
-(with-decorator functools.cache
-  (defn get-http
-    [url]
-    "Make HTTP GET request and cache it"
-    (. (requests.get url) text)
-  )
-)
+(defclass Operator []
+  "Class for operators"
+  (with-decorator functools.cache
+    (defn get-http
+      [url]
+      "Make HTTP GET request and cache it"
+      (. (requests.get url) text)))
 
 
-(with-decorator functools.cache
-  (defn get-soup
-    [web]
-    "Build soup object"
-    (BeautifulSoup web "html.parser")
-  )
+  (with-decorator functools.cache
+    (defn get-soup
+      [html]
+      "Build soup object from html"
+      (BeautifulSoup html "html.parser")))
+
+  (with-decorator functools.cache
+    (defn get-links
+      [soup]
+      "Get all links"
+      (.find_all soup get-links?)))
 )
 
 (defn get-links?
@@ -89,22 +115,32 @@
 )
 
 (defn init []
-  "Initialize init funcs"
+  "Initialize init funds"
   (init-log)
   (init-hi)
   (init-bye)
 )
 
+(defn build-func []
+  "Build up functions sequential"
+  (compose
+    (. Operator get-links)
+    (compose (. Operator get-soup) (. Operator get-http))
+  )
+)
+
+(setv func (build-func))
+
 (defn body []
   "Payload of app"
-  (setv func1 (compose get-soup get-http))
-  (setv func2 (compose get-links func1))
-  (print (func2 url))
+  (for [a (func url)]
+    (print (. a text))
+  )
 )
 
 (defmain
   [&rest args]
   "Main func"
-  (init)
+  (. Init init)
   (body)
 )
