@@ -88,14 +88,6 @@
   )
 )
 
-(with-decorator functools.cache
-  (defn get-links
-    [soup]
-    "Get all links"
-    (.find_all soup get-links?)
-  )
-)
-
 (defn build-url
   [url]
   (urllib.parse.urlparse url)
