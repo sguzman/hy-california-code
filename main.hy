@@ -18,21 +18,14 @@
 
 (defclass Init []
   "Class for init funcs"
-  (with-decorator staticmethod
     (defn init-hi []
       "hi :)"
-      (logging.info "hi :)")
-    )
-  )
+      (logging.info "hi :)"))
 
-  (with-decorator staticmethod
     (defn init-bye []
       "bye :("
-      (logging.info "bye :(")
-    )
-  )
+      (logging.info "bye :("))
 
-  (with-decorator staticmethod
     (defn init-log []
       "Init logging infrastructure"
       (logging.basicConfig
@@ -41,19 +34,13 @@
         :level
         logging.DEBUG
         :datefmt
-        "%Y-%m-%d %H:%M:%S"
-      )
-    )
-  )
+        "%Y-%m-%d %H:%M:%S"))
 
-  (with-decorator staticmethod
     (defn init []
       "Initialize init funds"
       (init-log)
       (init-hi)
-      (init-bye)
-    )
-  )
+      (init-bye))
 )
 
 
@@ -84,14 +71,11 @@
   "Is this the right a tag"
   (and
     (.has_attr tag "name")
-    (= (. tag name) "a")
-  )
-)
+    (= (. tag name) "a")))
 
 (defn build-url
   [url]
-  (urllib.parse.urlparse url)
-)
+  (urllib.parse.urlparse url))
 
 (defn cache
   [func url]
@@ -102,33 +86,20 @@
   "Compose two functions"
   (fn [h]
     "Lambda that composes functions"
-    (f (g h))
-  )
-)
-
-(defn init []
-  "Initialize init funds"
-  (init-log)
-  (init-hi)
-  (init-bye)
-)
+    (f (g h))))
 
 (defn build-func []
   "Build up functions sequential"
   (compose
     (. Operator get-links)
-    (compose (. Operator get-soup) (. Operator get-http))
-  )
-)
+    (compose (. Operator get-soup) (. Operator get-http))))
 
 (setv func (build-func))
 
 (defn body []
   "Payload of app"
   (for [a (func url)]
-    (print (. a text))
-  )
-)
+    (print (. a text))))
 
 (defmain
   [&rest args]
